@@ -1,10 +1,24 @@
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
-from src.retrieval.retriever import retrieve
-from src.generation.generator import generate_answer
 from src.config import Config
+from src.generation.generator import generate_answer
 
 app = FastAPI(title="Med-Psych RAG System", version="1.0.0")
+
+_retriever = None
+
+
+def get_retriever():
+    global _retriever
+    if Config.demo_mode or Config.llm_provider == "demo":
+        from src.retrieval.local_retriever import LocalRetriever
+        if _retriever is None:
+            _retriever = LocalRetriever()
+            _retriever.load()
+        return _retriever, "local"
+    else:
+        from src.retrieval.retriever import retrieve as _retrieve
+        return _retrieve, "remote"
 
 
 class QueryRequest(BaseModel):
@@ -24,6 +38,7 @@ def health():
         "status": "ok",
         "embedding_model": Config.embedding_model,
         "llm_provider": Config.llm_provider,
+        "demo_mode": Config.demo_mode,
     }
 
 
@@ -32,18 +47,23 @@ def query(request: QueryRequest):
     if not request.question.strip():
         raise HTTPException(status_code=400, detail="Question cannot be empty")
 
-    if not Config.openai_api_key and Config.llm_provider == "openai":
+    if not Config.demo_mode and Config.llm_provider == "openai" and not Config.openai_api_key:
         raise HTTPException(
             status_code=503,
-            detail="OPENAI_API_KEY not configured. Set it in .env or export it.",
+            detail="OPENAI_API_KEY not configured. Set DEMO=true for local testing.",
         )
 
+    retriever, retriever_type = get_retriever()
+
     try:
-        docs = retrieve(request.question)
+        if retriever_type == "local":
+            docs = retriever.retrieve(request.question, request.top_k)
+        else:
+            docs = retriever(request.question)
     except Exception as e:
         raise HTTPException(
             status_code=503,
-            detail=f"Retrieval failed: {e}. Ensure documents have been ingested and API keys are set.",
+            detail=f"Retrieval failed: {e}. Ensure documents have been ingested.",
         )
 
     if not docs:

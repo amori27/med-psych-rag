@@ -30,6 +30,18 @@ def get_llm():
 
 
 def generate_answer(question: str, context: str) -> str:
+    if Config.llm_provider == "demo" or Config.demo_mode:
+        sources = []
+        for line in context.split("\n"):
+            if line.startswith("[Source:"):
+                sources.append(line.strip())
+        source_str = "\n".join(sources[:3]) if sources else "local index"
+        return (
+            f"[Demo Mode] Retrieved answer for: {question}\n\n"
+            f"Based on the following sources:\n{source_str}\n\n"
+            f"(Set LLM_PROVIDER to openai/anthropic/ollama and configure API keys for LLM-powered answers)"
+        )
+
     llm = get_llm()
     chain = RAG_PROMPT | llm
     response = chain.invoke({"context": context, "question": question})

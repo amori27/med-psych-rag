@@ -6,6 +6,7 @@ load_dotenv()
 
 class Config:
     llm_provider: str = os.getenv("LLM_PROVIDER", "openai")
+    demo_mode: bool = os.getenv("DEMO", "false").lower() in ("1", "true", "yes")
     openai_api_key: str | None = os.getenv("OPENAI_API_KEY")
     anthropic_api_key: str | None = os.getenv("ANTHROPIC_API_KEY")
     ollama_base_url: str = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")
