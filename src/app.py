@@ -20,7 +20,11 @@ class QueryResponse(BaseModel):
 
 @app.get("/health")
 def health():
-    return {"status": "ok", "embedding_model": Config.embedding_model}
+    return {
+        "status": "ok",
+        "embedding_model": Config.embedding_model,
+        "llm_provider": Config.llm_provider,
+    }
 
 
 @app.post("/query", response_model=QueryResponse)
@@ -28,8 +32,19 @@ def query(request: QueryRequest):
     if not request.question.strip():
         raise HTTPException(status_code=400, detail="Question cannot be empty")
 
-    k = request.top_k or Config.top_k
-    docs = retrieve(request.question)
+    if not Config.openai_api_key and Config.llm_provider == "openai":
+        raise HTTPException(
+            status_code=503,
+            detail="OPENAI_API_KEY not configured. Set it in .env or export it.",
+        )
+
+    try:
+        docs = retrieve(request.question)
+    except Exception as e:
+        raise HTTPException(
+            status_code=503,
+            detail=f"Retrieval failed: {e}. Ensure documents have been ingested and API keys are set.",
+        )
 
     if not docs:
         return QueryResponse(
@@ -45,7 +60,6 @@ def query(request: QueryRequest):
     )
 
     answer = generate_answer(request.question, context)
-
     sources = [
         {
             "source": d.metadata.get("source", "unknown"),
@@ -54,4 +68,6 @@ def query(request: QueryRequest):
         for d in docs
     ]
 
-    return QueryResponse(answer=answer, sources=sources, source_count=len(sources))
+    return QueryResponse(
+        answer=answer, sources=sources, source_count=len(sources)
+    )

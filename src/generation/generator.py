@@ -1,6 +1,3 @@
-from langchain_openai import ChatOpenAI
-from langchain_anthropic import ChatAnthropic
-from langchain_ollama import ChatOllama
 from src.config import Config
 from src.generation.prompt_templates import RAG_PROMPT
 
@@ -8,16 +5,21 @@ from src.generation.prompt_templates import RAG_PROMPT
 def get_llm():
     match Config.llm_provider:
         case "openai":
+            from langchain_openai import ChatOpenAI
             return ChatOpenAI(
-                model="gpt-4o-mini", api_key=Config.openai_api_key, temperature=0
+                model="gpt-4o-mini",
+                api_key=Config.openai_api_key,
+                temperature=0,
             )
         case "anthropic":
+            from langchain_anthropic import ChatAnthropic
             return ChatAnthropic(
                 model="claude-3-haiku-20240307",
                 api_key=Config.anthropic_api_key,
                 temperature=0,
             )
         case "ollama":
+            from langchain_ollama import ChatOllama
             return ChatOllama(
                 model=Config.ollama_model,
                 base_url=Config.ollama_base_url,

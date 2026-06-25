@@ -65,7 +65,7 @@ curl -X POST http://localhost:8000/query \
 |---|---|---|
 | `LLM_PROVIDER` | `openai` | `openai`, `anthropic`, or `ollama` |
 | `OPENAI_API_KEY` | — | OpenAI API key |
-| `EMBEDDING_MODEL` | `all-MiniLM-L6-v2` | Sentence transformer model |
+| `EMBEDDING_MODEL` | `text-embedding-3-small` | OpenAI embedding model |
 | `CHUNK_SIZE` | `1000` | Characters per chunk |
 | `CHUNK_OVERLAP` | `200` | Overlap between chunks |
 | `TOP_K` | `5` | Number of chunks to retrieve |

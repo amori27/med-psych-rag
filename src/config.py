@@ -12,7 +12,7 @@ class Config:
     ollama_model: str = os.getenv("OLLAMA_MODEL", "llama3")
 
     embedding_model: str = os.getenv(
-        "EMBEDDING_MODEL", "sentence-transformers/all-MiniLM-L6-v2"
+        "EMBEDDING_MODEL", "text-embedding-3-small"
     )
 
     vector_store_type: str = os.getenv("VECTOR_STORE_TYPE", "chroma")
