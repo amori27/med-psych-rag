@@ -13,9 +13,10 @@ app = FastAPI(title="Med-Psych RAG", version="2.0.0")
 def health():
     store = get_vector_store()
     count = store._collection.count() if store._collection else 0
+    model_name = "gemini-2.0-flash" if settings.llm_provider == "gemini" else settings.llm_model
     return HealthResponse(
         status="ok",
-        llm=f"ollama/{settings.llm_model}",
+        llm=f"{settings.llm_provider}/{model_name}",
         docs_indexed=count,
     )
 

@@ -35,12 +35,35 @@ def retrieve(query: str, k: int | None = None) -> list[Document]:
     return retriever.invoke(query)
 
 
+def _get_llm():
+    match settings.llm_provider:
+        case "gemini":
+            from langchain_google_genai import ChatGoogleGenerativeAI
+            return ChatGoogleGenerativeAI(
+                model="gemini-2.0-flash",
+                google_api_key=settings.gemini_api_key,
+                temperature=0,
+            )
+        case "ollama":
+            from langchain_ollama import ChatOllama
+            return ChatOllama(
+                model=settings.llm_model,
+                base_url=settings.ollama_base_url,
+                temperature=0,
+            )
+        case _:
+            from langchain_openai import ChatOpenAI
+            return ChatOpenAI(
+                model=settings.llm_model,
+                api_key=settings.openai_api_key,
+                temperature=0,
+            )
+
+
 def generate(question: str, context: str) -> str:
-    from langchain_openai import ChatOpenAI
     from langchain_core.prompts import ChatPromptTemplate
 
-    llm = ChatOpenAI(model="gpt-4o-mini", temperature=0)
-
+    llm = _get_llm()
     prompt = ChatPromptTemplate.from_messages([
         (
             "system",

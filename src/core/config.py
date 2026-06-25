@@ -5,6 +5,9 @@ load_dotenv()
 
 
 class Settings:
+    llm_provider: str = os.getenv("LLM_PROVIDER", "openai")
+    openai_api_key: str | None = os.getenv("OPENAI_API_KEY")
+    gemini_api_key: str | None = os.getenv("GEMINI_API_KEY")
     ollama_base_url: str = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")
     llm_model: str = os.getenv("LLM_MODEL", "llama3")
     embedding_model: str = os.getenv("EMBEDDING_MODEL", "text-embedding-3-small")
