@@ -1,16 +1,13 @@
 from pathlib import Path
 from langchain_chroma import Chroma
-from langchain_community.embeddings import HuggingFaceBgeEmbeddings
+from langchain_openai import OpenAIEmbeddings
 from src.core.config import settings
 
 PERSIST_DIR = Path("data/chroma_db")
 
 
 def get_embedding_function():
-    return HuggingFaceBgeEmbeddings(
-        model_name=settings.embedding_model,
-        encode_kwargs={"normalize_embeddings": True},
-    )
+    return OpenAIEmbeddings(model=settings.embedding_model)
 
 
 def get_vector_store() -> Chroma:

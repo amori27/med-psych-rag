@@ -36,14 +36,10 @@ def retrieve(query: str, k: int | None = None) -> list[Document]:
 
 
 def generate(question: str, context: str) -> str:
-    from langchain_ollama import ChatOllama
+    from langchain_openai import ChatOpenAI
     from langchain_core.prompts import ChatPromptTemplate
 
-    llm = ChatOllama(
-        model=settings.llm_model,
-        base_url=settings.ollama_base_url,
-        temperature=0,
-    )
+    llm = ChatOpenAI(model="gpt-4o-mini", temperature=0)
 
     prompt = ChatPromptTemplate.from_messages([
         (
