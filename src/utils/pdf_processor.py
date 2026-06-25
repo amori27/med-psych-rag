@@ -1,5 +1,5 @@
-import fitz
 from pathlib import Path
+import fitz
 
 
 class PDFProcessor:
@@ -25,7 +25,6 @@ class PDFProcessor:
         meta = {
             "title": doc.metadata.get("title", ""),
             "author": doc.metadata.get("author", ""),
-            "subject": doc.metadata.get("subject", ""),
             "pages": len(doc),
         }
         doc.close()
