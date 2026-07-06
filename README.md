@@ -81,6 +81,30 @@ curl -X POST -H "Content-Type: application/json" \
 | Context Recall | 0.82 |
 | Faithfulness | 0.94 |
 
+## Project Structure
+
+```
+med-psych-rag/
+├── .env.example          # Environment variable template
+├── .github/
+│   ├── ISSUE_TEMPLATE/   # Bug report & feature request templates
+│   ├── PULL_REQUEST_TEMPLATE.md
+│   └── workflows/        # CI/CD pipeline (lint, test, docker)
+├── data/                 # Datasets (PMC, MIMIC-III) and ChromaDB storage
+├── docker/               # Dockerfile and docker-compose.yml
+├── docs/                 # Documentation
+├── scripts/              # Setup and utility scripts
+├── src/                  # Application source code
+├── tests/                # Test suite
+├── CHANGELOG.md
+├── CODE_OF_CONDUCT.md
+├── CONTRIBUTING.md
+├── LICENSE
+├── README.md
+├── requirements.txt
+└── SECURITY.md
+```
+
 ## License
 
 MIT
