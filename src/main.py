@@ -1,4 +1,8 @@
-"""FastAPI application entry point."""
+"""FastAPI application entry point for the Med-Psych RAG service.
+
+Exposes endpoints for health checks, querying the RAG pipeline, and
+ingesting new PDF documents.
+"""
 
 from fastapi import FastAPI, UploadFile, HTTPException
 from src.models.schemas import QueryRequest, QueryResponse, HealthResponse, IngestResponse, Source
@@ -10,7 +14,8 @@ app = FastAPI(title="Med-Psych RAG", version="2.0.0")
 
 
 @app.get("/health", response_model=HealthResponse)
-def health():
+def health() -> HealthResponse:
+    """Return service health, active LLM, and document count."""
     store = get_vector_store()
     count = store._collection.count() if store._collection else 0
     model_name = "gemini-2.0-flash" if settings.llm_provider == "gemini" else settings.llm_model
@@ -22,7 +27,12 @@ def health():
 
 
 @app.post("/query", response_model=QueryResponse)
-def query(request: QueryRequest):
+def query(request: QueryRequest) -> QueryResponse:
+    """Answer a question using the RAG pipeline.
+
+    Raises:
+        HTTPException 400: If the question is empty.
+    """
     if not request.question.strip():
         raise HTTPException(400, "Question cannot be empty")
 
@@ -47,7 +57,13 @@ def query(request: QueryRequest):
 
 
 @app.post("/ingest", response_model=IngestResponse)
-def ingest(file: UploadFile):
+def ingest(file: UploadFile) -> IngestResponse:
+    """Ingest a PDF file into the vector store.
+
+    Raises:
+        HTTPException 400: If the file is not a PDF.
+        HTTPException 500: If ingestion fails.
+    """
     if not file.filename.endswith(".pdf"):
         raise HTTPException(400, "Only PDF files are supported")
 

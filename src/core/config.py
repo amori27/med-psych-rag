@@ -1,3 +1,5 @@
+"""Application configuration loaded from environment variables."""
+
 import os
 from dotenv import load_dotenv
 
@@ -5,6 +7,11 @@ load_dotenv()
 
 
 class Settings:
+    """RAG pipeline configuration with sensible defaults.
+
+    All values can be overridden via environment variables.
+    """
+
     llm_provider: str = os.getenv("LLM_PROVIDER", "openai")
     openai_api_key: str | None = os.getenv("OPENAI_API_KEY")
     gemini_api_key: str | None = os.getenv("GEMINI_API_KEY")
